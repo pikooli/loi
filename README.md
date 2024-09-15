@@ -1,17 +1,14 @@
-# create-svelte
+# Letter of Intent
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+A simple tool to create and sign Letters of Intent for projects.
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
+# Env
 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+PUBLIC_DOMAIN_EMAIL= ***@***.com
+PUBLIC_DOMAIN_NAME= ***.com
+SMTP_USERNAME= ***@***.com
+SMTP_PASSWORD= ***
 ```
 
 ## Developing

@@ -1,25 +1,24 @@
-import { MAIL_API_KEY } from '$env/static/private';
-import { PUBLIC_DOMAIN_EMAIL } from '$env/static/public';
+import { SMTP_USERNAME, SMTP_PASSWORD } from '$env/static/private';
+import { PUBLIC_DOMAIN_EMAIL ,PUBLIC_DOMAIN_NAME} from '$env/static/public';
 import { json } from '@sveltejs/kit';
-import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
+import nodemailer from 'nodemailer';
+import { generatePdf } from './generatePdf';
 
-const mailersend = new MailerSend({
-  apiKey: MAIL_API_KEY,
+const transporter = nodemailer.createTransport({
+  host: 'smtp.ionos.fr',
+  port: 465, 
+  secure: true,
+  auth: {
+    user: SMTP_USERNAME, 
+    pass: SMTP_PASSWORD,
+  },
 });
+
 
 export async function POST({ request }) {
   const {
     data: { projectName, projectDescription, projectUrl, contactEmail, commitmentText, signer },
   } = await request.json();
-
-  const from = new Sender(PUBLIC_DOMAIN_EMAIL);
-  const toSigner = [
-    new Recipient(signer.email, `${signer.firstName} ${signer.lastName}`),
-  ];
-
-  const toContact = [
-    new Recipient(contactEmail, 'Project Manager'),
-  ];
 
   const emailContent = `
   Hello ${signer.firstName} ${signer.lastName},
@@ -30,7 +29,7 @@ export async function POST({ request }) {
   ${projectDescription}
 
   **Project URL:**
-  ${projectUrl || 'Na'}
+  ${projectUrl || 'N/A'}
 
   **Contact Email:**
   ${contactEmail}
@@ -41,36 +40,36 @@ export async function POST({ request }) {
   **Please Note:**
   Signing this Letter of Intent (LOI) is not legally binding and does not constitute a contract. It is a preliminary document expressing your interest and intention without creating any legal obligations.
 
-  
   Best regards,
   The "${projectName}" Project Team
   ----------------------------------------------------------------------------------------------------
-
-  This letter was created using the site https://www.letterofinterest.tech/
+  
+  This letter was created using the site https://www.${PUBLIC_DOMAIN_NAME}
   `;
 
-  const emailParamsSigner = new EmailParams()
-    .setFrom(from)
-    .setTo(toSigner)
-    .setSubject(`Letter of Intent for ${projectName}`)
-    .setText(emailContent);
+  const pdfAttachment = generatePdf({projectName, projectDescription, commitmentText, signer, contactEmail, projectUrl});
 
-    const emailParamsContact = new EmailParams()
-    .setFrom(from)
-    .setTo(toContact)
-    .setSubject(`Letter of Intent for ${projectName}`)
-    .setText(emailContent);
-
-  console.log('emailParamsSigner', emailParamsSigner);
-  console.log('emailParamsContact', emailParamsContact);
+  const mailOptions = {
+    from: `${PUBLIC_DOMAIN_NAME} <${PUBLIC_DOMAIN_EMAIL}>`,
+    to: [signer.email, ],
+    bcc: [contactEmail,PUBLIC_DOMAIN_EMAIL],
+    subject: `Letter of Intent for ${projectName}`,
+    text: emailContent,
+    attachments: [
+      {
+        filename: `${projectName}_Letter_of_Intent.pdf`,
+        content: pdfAttachment,
+        contentType: 'application/pdf',
+      },
+    ],
+  };
 
   try {
-    await mailersend.email.send(emailParamsSigner);
-    await mailersend.email.send(emailParamsContact);
+    // await transporter.sendMail(mailOptions);
 
     return json({ success: true });
-  } catch (error) {
-    console.error('Error sending the email:', error);
-    return json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('Error sending email:', error);
+    return json({ success: false, error: (error as Error).message }, { status: 500 });
   }
 }
