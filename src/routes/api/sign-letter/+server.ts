@@ -65,7 +65,7 @@ export async function POST({ request }) {
   };
 
   try {
-    // await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
 
     return json({ success: true });
   } catch (error: unknown) {
