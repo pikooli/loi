@@ -1,46 +1,76 @@
-import { MAIL_API_KEY,DOMAIN_EMAIL  } from '$env/static/private';
+import { MAIL_API_KEY } from '$env/static/private';
+import { PUBLIC_DOMAIN_EMAIL } from '$env/static/public';
 import { json } from '@sveltejs/kit';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 
 const mailersend = new MailerSend({
-    apiKey: MAIL_API_KEY
+  apiKey: MAIL_API_KEY,
 });
 
 export async function POST({ request }) {
-	const {data: {projectName, contactEmail, commitmentText, signer}} = await request.json();
+  const {
+    data: { projectName, projectDescription, projectUrl, contactEmail, commitmentText, signer },
+  } = await request.json();
 
+  const from = new Sender(PUBLIC_DOMAIN_EMAIL);
+  const toSigner = [
+    new Recipient(signer.email, `${signer.firstName} ${signer.lastName}`),
+  ];
 
-	const from = new Sender(DOMAIN_EMAIL);
-	const to = [
-		new Recipient(signer.email, `${signer.firstName} ${signer.lastName}`),
-		new Recipient(contactEmail, 'Responsable du Projet'),
-        new Recipient(DOMAIN_EMAIL, 'DOMAIN EMAIL')
-	];
+  const toContact = [
+    new Recipient(contactEmail, 'Project Manager'),
+  ];
 
-	const emailContent = `
-    Bonjour ${signer.firstName} ${signer.lastName},
+  const emailContent = `
+  Hello ${signer.firstName} ${signer.lastName},
 
-    Merci d'avoir signé la lettre d'engagement pour le projet "${projectName}".
+  Thank you for signing the Letter of Intent for the project "${projectName}".
 
-    Texte d'engagement :
-    ${commitmentText}
+  **Project Description:**
+  ${projectDescription}
 
-    Cordialement,
-    L'équipe du projet "${projectName}"
+  **Project URL:**
+  ${projectUrl || 'Na'}
+
+  **Contact Email:**
+  ${contactEmail}
+
+  **Commitment Text:**
+  ${commitmentText}
+
+  **Please Note:**
+  Signing this Letter of Intent (LOI) is not legally binding and does not constitute a contract. It is a preliminary document expressing your interest and intention without creating any legal obligations.
+
+  
+  Best regards,
+  The "${projectName}" Project Team
+  ----------------------------------------------------------------------------------------------------
+
+  This letter was created using the site https://www.letterofinterest.tech/
   `;
 
-	const emailParams = new EmailParams()
-		.setFrom(from)
-		.setTo(to)
-		.setSubject(`Lettre d'Engagement pour ${projectName}`)
-		.setText(emailContent);
-    console.log('emailParams', emailParams)
-	try {
-		await mailersend.email.send(emailParams);
+  const emailParamsSigner = new EmailParams()
+    .setFrom(from)
+    .setTo(toSigner)
+    .setSubject(`Letter of Intent for ${projectName}`)
+    .setText(emailContent);
 
-		return json({ success: true });
-	} catch (error) {
-		console.error("Erreur lors de l'envoi de l'email :", error);
-		return json({ success: false, error: error.message }, { status: 500 });
-	}
+    const emailParamsContact = new EmailParams()
+    .setFrom(from)
+    .setTo(toContact)
+    .setSubject(`Letter of Intent for ${projectName}`)
+    .setText(emailContent);
+
+  console.log('emailParamsSigner', emailParamsSigner);
+  console.log('emailParamsContact', emailParamsContact);
+
+  try {
+    await mailersend.email.send(emailParamsSigner);
+    await mailersend.email.send(emailParamsContact);
+
+    return json({ success: true });
+  } catch (error) {
+    console.error('Error sending the email:', error);
+    return json({ success: false, error: error.message }, { status: 500 });
+  }
 }

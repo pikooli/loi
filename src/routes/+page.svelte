@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
   
     let projectName = '';
     let projectUrl = '';
     let contactEmail = '';
     let projectDescription = '';
     let commitmentText = '';
-  
+    let generatedLink = '';
+
     function generateLink() {
       const projectData = {
         projectName,
@@ -20,7 +20,7 @@
       const base64String = btoa(jsonString);
       const link = `${window.location.origin}/sign/${base64String}`;
   
-      goto(link);
+      generatedLink =link;
     }
   </script>
   
@@ -63,3 +63,12 @@
       Generate Link
     </button>
   </form>
+
+  {#if generatedLink}
+  <div class="mt-4">
+    <p class="font-semibold">Your generated link:</p>
+    <a href="{generatedLink}" target="_blank" class="text-blue-600 hover:underline break-all">
+      {generatedLink}
+    </a>
+  </div>
+{/if}
