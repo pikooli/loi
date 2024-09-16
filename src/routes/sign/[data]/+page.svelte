@@ -53,7 +53,7 @@
   </script>
   
   <div class="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg">
-	<h2 class="text-3xl font-bold mb-4 text-center">{projectData.projectName}</h2>
+	<h2 class="text-3xl font-bold mb-4 text-center capitalize">{projectData.projectName}</h2>
 	<p class="mb-4 text-gray-700">{projectData.projectDescription}</p>
   
 	{#if projectData.projectUrl}
