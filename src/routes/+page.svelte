@@ -5,8 +5,16 @@
 	let projectDescription = '';
 	let commitmentText = '';
 	let generatedLink = '';
+	let agreeToTerms = false;
+	let errorMessage = '';
+
 
 	function generateLink() {
+		if (!agreeToTerms) {
+			errorMessage = "You must agree to the terms before generating a link.";
+			return;
+		}
+
 		const projectData = {
 			projectName: projectName.trim(),
 			projectUrl: projectUrl.trim(),
@@ -18,6 +26,7 @@
 		const jsonString = JSON.stringify(projectData);
 		const base64String = btoa(jsonString);
 		const link = `${window.location.origin}/sign/${base64String}`;
+		errorMessage = '';
 
 		generatedLink = link;
 	}
@@ -56,6 +65,18 @@
 		placeholder="Desired Commitment Text (optional)"
 		class="w-full p-2 border border-gray-300 rounded h-24"
 	></textarea>
+
+	<div class="flex items-center space-x-2">
+		<input type="checkbox" bind:checked={agreeToTerms} id="terms" />
+		<label for="terms" class="text-gray-700">
+			I acknowledge that this Letter of Intent (LOI) is not legally binding and I agree to the <a href="/terms-and-conditions" class="text-blue-600 hover:underline">Terms and Conditions</a>.
+		</label>
+	</div>
+
+	{#if errorMessage}
+		<p class="text-red-600">{errorMessage}</p>
+	{/if}
+	
 	<button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
 		Generate Link
 	</button>

@@ -15,6 +15,8 @@
 	let lastName = '';
 	let signerEmail = '';
 	let commitmentText = '';
+	let agreeToTerms = false;
+	let errorMessage = '';
   
 	onMount(() => {
 	  const data = $page.params.data;
@@ -28,6 +30,10 @@
 	});
   
 	async function submitSignature() {
+		if (!agreeToTerms) {
+			errorMessage = "You must agree to the terms before signing the letter.";
+			return;
+		}
 	  const signatureData = {
 		...projectData,
 		signer: {
@@ -37,7 +43,8 @@
 		},
 		commitmentText,
 	  };
-  
+
+		errorMessage = '';
 	  const response = await fetch('/api/sign-letter', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -119,6 +126,16 @@
 		  class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
 		/>
 	  </div>
+	  <div class="flex items-center space-x-2">
+		<input type="checkbox" bind:checked={agreeToTerms} id="terms" />
+		<label for="terms" class="text-gray-700">
+			I acknowledge that this Letter of Intent (LOI) is not legally binding and I agree to the <a href="/terms-and-conditions" class="text-blue-600 hover:underline">Terms and Conditions</a>.
+		</label>
+	</div>
+
+	{#if errorMessage}	
+		<p class="text-red-600">{errorMessage}</p>
+	{/if}
 	  <button
 		type="submit"
 		class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
