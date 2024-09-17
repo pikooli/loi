@@ -35,7 +35,7 @@
 	<input
 		type="url"
 		bind:value={projectUrl}
-		placeholder="Project URL"
+		placeholder="Project URL (optional)"
 		class="w-full p-2 border border-gray-300 rounded"
 	/>
 	<input
@@ -48,11 +48,12 @@
 	<textarea
 		bind:value={projectDescription}
 		placeholder="Project Description"
+		required
 		class="w-full p-2 border border-gray-300 rounded h-24"
 	></textarea>
 	<textarea
 		bind:value={commitmentText}
-		placeholder="Desired Commitment Text"
+		placeholder="Desired Commitment Text (optional)"
 		class="w-full p-2 border border-gray-300 rounded h-24"
 	></textarea>
 	<button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">

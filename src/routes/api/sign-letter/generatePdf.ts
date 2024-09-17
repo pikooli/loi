@@ -38,6 +38,16 @@ const incrementLine = ({ doc, yPosition, nb = 1, lineHeight = LINE_HEIGHT }: Inc
 	return yPosition + lineHeight * nb;
 };
 
+
+const addTexts = ({ doc, yPosition, texts }: { doc: jsPDF; yPosition: number; texts: string[]	 }): number => {
+	doc.text(texts, MARGIN_LEFT, yPosition);
+	if (texts.length > 1) {
+		return incrementLine({ doc, yPosition , nb: texts.length, lineHeight: LINE_HEIGHT / 2});	
+	}
+	return incrementLine({ doc, yPosition });	
+};
+
+
 const addText = ({ doc, yPosition, text }: { doc: jsPDF; yPosition: number; text: string }): number => {
 	const textLines = doc.splitTextToSize(text.trim(), PAGE_WIDTH);
 
@@ -75,12 +85,16 @@ export function generatePdf({
 	let startY = addText({ doc, yPosition: START_LINE, text: 'Letter of Intent' });
 
 	doc.setFontSize(12);
-	startY = addText({ doc, yPosition: startY, text: `Project Name: ${projectName.trim()}` });
-	startY = addText({ doc, yPosition: startY, text: `Contact Email: ${contactEmail.trim()}` });
-
+	const projectDetails = [
+		`Project Name: ${projectName.trim()}` ,
+		`Contact Email: ${contactEmail.trim()}`,
+	]
 	if (projectUrl) {
-		startY = addText({ doc, yPosition: startY, text: `Project URL: ${projectUrl.trim()}` });
+		projectDetails.push(`Project URL: ${projectUrl.trim()}`);
 	}
+	startY = addTexts({ doc, yPosition: startY, texts: projectDetails });
+
+	startY = incrementLine({ doc, yPosition: startY});
 
 	startY = addText({
 		doc,
@@ -108,25 +122,21 @@ export function generatePdf({
 
 	startY = incrementLine({ doc, yPosition: startY});
 	const currentDate = new Date().toLocaleDateString();
-	startY = addText({ doc, yPosition: startY, text: `Signed the ${currentDate} by: ` });
-	startY = addText({ doc, yPosition: startY, text: `${signer.firstName.trim()} ${signer.lastName.trim()}` });
-	startY = addText({ doc, yPosition: startY, text: `${signer.email.trim()}` });
+	startY= addTexts({ doc, yPosition: startY, texts: [
+		`Signed the ${currentDate} by: `,
+		`${signer.firstName.trim()} ${signer.lastName.trim()}`,
+		`${signer.email.trim()}`
+	] });
+	
 	startY = incrementLine({ doc, yPosition: startY});
 
 	doc.setFontSize(10);
 	doc.setTextColor(150);
-	startY = addText({ doc, yPosition: startY, text: '------------------------------------------' });
-	startY = addText({
-		doc,
-		yPosition: startY,
-		text: `This Letter of Intent (LOI) is not legally binding and does not constitute a contract.`
-	});
-
-	addText({
-		doc,
-		yPosition: startY,
-		text: `It is a preliminary document expressing your interest and intention without creating any legal obligations.`
-	});
+	addTexts({ doc, yPosition: startY, texts: [
+		'------------------------------------------',
+		'This Letter of Intent (LOI) is not legally binding and does not constitute a contract.',
+		'It is a preliminary document expressing your interest and intention without creating any legal obligations.'
+	] });
 
 
 	addFooter({ doc });
