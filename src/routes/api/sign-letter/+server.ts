@@ -50,9 +50,8 @@ const generateEmailContent = ({
 
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.ionos.fr',
-  port: 465, 
-  secure: true,
+  host :'smtp-relay.brevo.com',
+  port: 587,
   auth: {
     user: SMTP_USERNAME, 
     pass: SMTP_PASSWORD,
@@ -70,7 +69,7 @@ export async function POST({ request }) {
 
   const mailOptions = {
     from: `${PUBLIC_DOMAIN_NAME} <${PUBLIC_DOMAIN_EMAIL}>`,
-    to: [signer.email, ],
+    to: [signer.email],
     bcc: [contactEmail,PUBLIC_DOMAIN_EMAIL],
     subject: `Letter of Intent for ${projectName}`,
     text: generateEmailContent({projectName:projectName.trim(), projectDescription:projectDescription.trim(), projectUrl:projectUrl.trim(), contactEmail:contactEmail.trim(), commitmentText:commitmentText.trim(), signer: {

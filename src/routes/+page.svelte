@@ -8,10 +8,9 @@
 	let agreeToTerms = false;
 	let errorMessage = '';
 
-
 	function generateLink() {
 		if (!agreeToTerms) {
-			errorMessage = "You must agree to the terms before generating a link.";
+			errorMessage = 'You must agree to the terms before generating a link.';
 			return;
 		}
 
@@ -32,55 +31,61 @@
 	}
 </script>
 
-<h1 class="text-4xl font-bold mb-4">Define Your Project</h1>
-<form on:submit|preventDefault={generateLink} class="space-y-4">
-	<input
-		type="text"
-		bind:value={projectName}
-		placeholder="Project Name"
-		required
-		class="w-full p-2 border border-gray-300 rounded"
-	/>
-	<input
-		type="url"
-		bind:value={projectUrl}
-		placeholder="Project URL (optional)"
-		class="w-full p-2 border border-gray-300 rounded"
-	/>
-	<input
-		type="email"
-		bind:value={contactEmail}
-		placeholder="Contact Email"
-		required
-		class="w-full p-2 border border-gray-300 rounded"
-	/>
-	<textarea
-		bind:value={projectDescription}
-		placeholder="Project Description"
-		required
-		class="w-full p-2 border border-gray-300 rounded h-24"
-	></textarea>
-	<textarea
-		bind:value={commitmentText}
-		placeholder="Desired Commitment Text (optional)"
-		class="w-full p-2 border border-gray-300 rounded h-24"
-	></textarea>
+<div class="shadow-md rounded-lg p-6">
+	<h1 class="text-4xl font-bold mb-4">Define Your Project</h1>
+	<form on:submit|preventDefault={generateLink} class="space-y-4">
+		<input
+			type="text"
+			bind:value={projectName}
+			placeholder="Project Name"
+			required
+			class="w-full p-2 border border-gray-300 rounded"
+		/>
+		<input
+			type="url"
+			bind:value={projectUrl}
+			placeholder="Project URL (optional)"
+			class="w-full p-2 border border-gray-300 rounded"
+		/>
+		<input
+			type="email"
+			bind:value={contactEmail}
+			placeholder="Contact Email"
+			required
+			class="w-full p-2 border border-gray-300 rounded"
+		/>
+		<textarea
+			bind:value={projectDescription}
+			placeholder="Project Description"
+			required
+			class="w-full p-2 border border-gray-300 rounded h-24"
+		></textarea>
+		<textarea
+			bind:value={commitmentText}
+			placeholder="Desired Commitment Text (optional)"
+			class="w-full p-2 border border-gray-300 rounded h-24"
+		></textarea>
 
-	<div class="flex items-center space-x-2">
-		<input type="checkbox" bind:checked={agreeToTerms} id="terms" />
-		<label for="terms" class="text-gray-700">
-			I acknowledge that this Letter of Intent (LOI) is not legally binding and I agree to the <a href="/terms-and-conditions" class="text-blue-600 hover:underline">Terms and Conditions</a>.
-		</label>
-	</div>
+		<div class="flex items-center space-x-2">
+			<input type="checkbox" bind:checked={agreeToTerms} id="terms" />
+			<label for="terms" class="text-gray-700">
+				I acknowledge that this Letter of Intent (LOI) is not legally binding and I agree to the <a
+					href="/terms-and-conditions"
+					target="_blank"
+					class="text-blue-600 hover:underline">Terms and Conditions</a
+				>.
+			</label>
+		</div>
 
-	{#if errorMessage}
-		<p class="text-red-600">{errorMessage}</p>
-	{/if}
-	
-	<button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-		Generate Link
-	</button>
-</form>
+		{#if errorMessage}
+			<p class="text-red-600">{errorMessage}</p>
+		{/if}
+
+		<button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+			Generate Link
+		</button>
+	</form>
+</div>
 
 {#if generatedLink}
 	<div class="mt-4">

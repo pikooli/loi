@@ -61,8 +61,9 @@
   
   <div class="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg">
 	<h2 class="text-3xl font-bold mb-4 text-center capitalize">{projectData.projectName}</h2>
+	<p class="mb-4">{projectData.contactEmail}</p>
+
 	<p class="mb-4 text-gray-700">{projectData.projectDescription}</p>
-  
 	{#if projectData.projectUrl}
 	  <a
 		href="{projectData.projectUrl}"
@@ -129,7 +130,7 @@
 	  <div class="flex items-center space-x-2">
 		<input type="checkbox" bind:checked={agreeToTerms} id="terms" />
 		<label for="terms" class="text-gray-700">
-			I acknowledge that this Letter of Intent (LOI) is not legally binding and I agree to the <a href="/terms-and-conditions" class="text-blue-600 hover:underline">Terms and Conditions</a>.
+			I acknowledge that this Letter of Intent (LOI) is not legally binding and I agree to the <a href="/terms-and-conditions" target="_blank" class="text-blue-600 hover:underline">Terms and Conditions</a>.
 		</label>
 	</div>
 
