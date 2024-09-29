@@ -1,3 +1,4 @@
+
 <script lang="ts">
 	let projectName = '';
 	let projectUrl = '';
@@ -13,21 +14,25 @@
 			errorMessage = 'You must agree to the terms before generating a link.';
 			return;
 		}
+		try {
+			const projectData = {
+				projectName: projectName.trim(),
+				projectUrl: projectUrl.trim(),
+				contactEmail: contactEmail.trim(),
+				projectDescription: projectDescription.trim(),
+				commitmentText: commitmentText.trim()
+			};
 
-		const projectData = {
-			projectName: projectName.trim(),
-			projectUrl: projectUrl.trim(),
-			contactEmail: contactEmail.trim(),
-			projectDescription: projectDescription.trim(),
-			commitmentText: commitmentText.trim()
-		};
+			const jsonString = JSON.stringify(projectData);
+			const base64String = btoa(jsonString);
+			const link = `${window.location.origin}/sign/${base64String}`;
+			errorMessage = '';
 
-		const jsonString = JSON.stringify(projectData);
-		const base64String = btoa(jsonString);
-		const link = `${window.location.origin}/sign/${base64String}`;
-		errorMessage = '';
-
-		generatedLink = link;
+			generatedLink = link;
+		} catch (error: any) {
+			console.error(error);
+			errorMessage = `An error occurred while generating the link. ${error.message}`;
+		}
 	}
 </script>
 
@@ -36,6 +41,7 @@
 	<form on:submit|preventDefault={generateLink} class="space-y-4">
 		<input
 			type="text"
+			name="projectName"
 			bind:value={projectName}
 			placeholder="Project Name"
 			required
@@ -43,12 +49,14 @@
 		/>
 		<input
 			type="url"
+			name="url"
 			bind:value={projectUrl}
 			placeholder="Project URL (optional)"
 			class="w-full p-2 border border-gray-300 rounded"
 		/>
 		<input
 			type="email"
+			name="email"
 			bind:value={contactEmail}
 			placeholder="Contact Email"
 			required
@@ -56,12 +64,14 @@
 		/>
 		<textarea
 			bind:value={projectDescription}
+			name="projectDescription"
 			placeholder="Project Description"
 			required
 			class="w-full p-2 border border-gray-300 rounded h-24"
 		></textarea>
 		<textarea
 			bind:value={commitmentText}
+			name="commitmentText"
 			placeholder="Desired Commitment Text (optional)"
 			class="w-full p-2 border border-gray-300 rounded h-24"
 		></textarea>
